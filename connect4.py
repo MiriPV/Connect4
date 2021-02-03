@@ -1,8 +1,11 @@
 import numpy as np
 import pygame
 import sys
+import math
 
+RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
 ROW_COUNT = 6
@@ -57,7 +60,13 @@ def draw_board(board):
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
             pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE)) 
-            pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+            if board[r][c] == 0:
+                pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+            elif board[r][c] == 1:
+                pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+            else:
+                pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+        pygame.display.update()
 
 
 board = create_board()
@@ -67,7 +76,7 @@ turn = 0
 
 pygame.init() 
 
-SQUARESIZE = 80
+SQUARESIZE = 75
 
 width = COLUMN_COUNT * SQUARESIZE
 height = (ROW_COUNT + 1) * SQUARESIZE
@@ -87,34 +96,38 @@ while not game_over:
             sys.exit()
         
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print(" ")
+            # print(event.pos)
             # #Ask for input player 1
-            # if turn == 0:
-            #     colom = int(input("Player 1, Make your selection(0-6): "))
+            if turn == 0:
+                posx = event.pos[0]
+                colom = int(math.floor(posx/SQUARESIZE))
 
-            # if is_valid_location(board, colom):
-            #     row = get_next_open_row(board, colom)
-            #     drop_piece(board, row, colom, 1)
+                if is_valid_location(board, colom):
+                    row = get_next_open_row(board, colom)
+                    drop_piece(board, row, colom, 1)
 
-            # if winning_move(board, 1):
-            #     print("PLAYER 1 WINS!")
-
-
-
-            # #Ask for input player 2
-            # else: 
-            #     colom = int(input("Player 2, Make your selection(0-6): "))
-
-            #     if is_valid_location(board, colom):
-            #         row = get_next_open_row(board, colom)
-            #         drop_piece(board, row, colom, 2)
-
-            #     if winning_move(board, 2):
-            #         print("PLAYER 2 WINS!")
-
-            # print_board(board)
+                if winning_move(board, 1):
+                    print("PLAYER 1 WINS!")
 
 
 
-            # turn += 1
-            # turn = turn % 2
+            #Ask for input player 2
+            else: 
+                posx = event.pos[0]
+                colom = int(math.floor(posx/SQUARESIZE))
+                
+
+                if is_valid_location(board, colom):
+                    row = get_next_open_row(board, colom)
+                    drop_piece(board, row, colom, 2)
+
+                if winning_move(board, 2):
+                    print("PLAYER 2 WINS!")
+
+            print_board(board)
+            draw_board(board)
+
+
+
+            turn += 1
+            turn = turn % 2
